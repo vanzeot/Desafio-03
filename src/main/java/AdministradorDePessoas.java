@@ -26,27 +26,41 @@ public class AdministradorDePessoas {
 
         // SELECT no banco de dados
         con=ConexaoBD.criarConexao();
-        String query="SELECT nome, telefone, email, endereco, cpf, data_de_nascimento FROM \"desafio-03\".public.pessoa";
+        String queryPessoas="SELECT nome, telefone, email, endereco, cpf, data_de_nascimento FROM \"desafio-03\".public.pessoa";
 
         try{
-            Statement statement=con.createStatement();
-            ResultSet resultSet= statement.executeQuery(query);
+            Statement statementDasPessoas = con.createStatement();
+            ResultSet resultSetDasPessoas= statementDasPessoas.executeQuery(queryPessoas);
 
             System.out.printf("\n| %-25s | %-13s | %-25s | %-35s | %-14s | %-12s | %-120s |\n",
                     "NOME", "TELEFONE", "EMAIL", "ENDEREÇO", "CPF", "DATA NASC.", "CONTATOS");
 
             int i = 0;
 
-            while (resultSet.next()){
+            while (resultSetDasPessoas.next()){
+
+                String queryContatos="SELECT nome, email, telefone FROM \"desafio-03\".public.contato";
+                Statement statementDosContatos = con.createStatement();
+                ResultSet resultSetDosContatos = statementDosContatos.executeQuery(queryContatos);
+
+                StringBuilder contatos = new StringBuilder();
+                while ( resultSetDosContatos.next() ){
+                    contatos.append("< ")
+                            .append(resultSetDosContatos.getString("nome"))
+                            .append(" / ").append(resultSetDosContatos.getString("email"))
+                            .append(" / ").append(resultSetDosContatos.getString("telefone"))
+                            .append(" > ");
+                }
 
                 System.out.printf("| %-25s | %-13s | %-25s | %-35s | %-14s | %-12s | %-120s |\n",
-                        resultSet.getString(1), //nome
-                        resultSet.getString(2), //telefone
-                        resultSet.getString(3), //email
-                        resultSet.getString(4), //endereço
-                        resultSet.getString(5), //cpf
-                        resultSet.getString(6),  //data de nascimento
-                        "CONTATOS" // TODO: STRING DOS CONTATOS
+                        resultSetDasPessoas.getString(1), //nome
+                        resultSetDasPessoas.getString(2), //telefone
+                        resultSetDasPessoas.getString(3), //email
+                        resultSetDasPessoas.getString(4), //endereço
+                        resultSetDasPessoas.getString(5), //cpf
+                        resultSetDasPessoas.getString(6),  //data de nascimento
+                        contatos.toString()
+//                        "CONTATOS" // TODO: STRING DOS CONTATOS
                 );
 
                 i++;
