@@ -16,7 +16,7 @@ public class AdministradorDePessoas {
     static ArrayList<Pessoa> pessoas;   // TODO: REMOVER, substituído pelo banco de dados
 
     public AdministradorDePessoas(){
-        pessoas = new ArrayList<>();
+//        pessoas = new ArrayList<>();
         Mensageria mensageria = new Mensageria();
     }
 
@@ -26,24 +26,29 @@ public class AdministradorDePessoas {
 
         // SELECT no banco de dados
         con=ConexaoBD.criarConexao();
-        String queryPessoas="SELECT nome, telefone, email, endereco, cpf, data_de_nascimento FROM \"desafio-03\".public.pessoa";
+        String queryPessoas="SELECT id_pessoa, nome, telefone, email, endereco, cpf, data_de_nascimento FROM \"desafio-03\".public.pessoa";
 
         try{
             Statement statementDasPessoas = con.createStatement();
             ResultSet resultSetDasPessoas= statementDasPessoas.executeQuery(queryPessoas);
 
+            // CABEÇALHO DA TABELA
             System.out.printf("\n| %-25s | %-13s | %-25s | %-35s | %-14s | %-12s | %-120s |\n",
                     "NOME", "TELEFONE", "EMAIL", "ENDEREÇO", "CPF", "DATA NASC.", "CONTATOS");
 
             int i = 0;
 
+            // LOOP PARA CADA PESSOA ENCONTRADA NA TABELA
             while (resultSetDasPessoas.next()){
 
-                String queryContatos="SELECT nome, email, telefone FROM \"desafio-03\".public.contato";
+                Long id_pessoa = resultSetDasPessoas.getLong("id_pessoa");
+                String queryContatos="SELECT nome, email, telefone FROM \"desafio-03\".public.contato where id_pessoa = " + id_pessoa;
                 Statement statementDosContatos = con.createStatement();
                 ResultSet resultSetDosContatos = statementDosContatos.executeQuery(queryContatos);
 
                 StringBuilder contatos = new StringBuilder();
+
+                // LOOP PARA CADA CONTATO ENCONTRADO DA PESSOA
                 while ( resultSetDosContatos.next() ){
                     contatos.append("< ")
                             .append(resultSetDosContatos.getString("nome"))
@@ -53,14 +58,13 @@ public class AdministradorDePessoas {
                 }
 
                 System.out.printf("| %-25s | %-13s | %-25s | %-35s | %-14s | %-12s | %-120s |\n",
-                        resultSetDasPessoas.getString(1), //nome
-                        resultSetDasPessoas.getString(2), //telefone
-                        resultSetDasPessoas.getString(3), //email
-                        resultSetDasPessoas.getString(4), //endereço
-                        resultSetDasPessoas.getString(5), //cpf
-                        resultSetDasPessoas.getString(6),  //data de nascimento
+                        resultSetDasPessoas.getString(2), //nome
+                        resultSetDasPessoas.getString(3), //telefone
+                        resultSetDasPessoas.getString(4), //email
+                        resultSetDasPessoas.getString(5), //endereço
+                        resultSetDasPessoas.getString(6), //cpf
+                        resultSetDasPessoas.getString(7), //data de nascimento
                         contatos.toString()
-//                        "CONTATOS" // TODO: STRING DOS CONTATOS
                 );
 
                 i++;
@@ -78,8 +82,8 @@ public class AdministradorDePessoas {
     public void adicionarPessoa(){
 
         Pessoa pessoa = new Pessoa();
-//        inserirDados(pessoa);
-        testarInserindoDados(pessoa);
+        pessoa.inserirDados();
+//        testarInserindoDados(pessoa);
         con = ConexaoBD.criarConexao();
 
         // INSERÇÃO no banco de dados
@@ -124,19 +128,7 @@ public class AdministradorDePessoas {
 
     }
 
-    public static Pessoa inserirDados(Pessoa pessoa){
-        // TODO: MOVER ISSO PRA CLASSE "PESSOA"
-        pessoa.selecionarNome()
-                .selecionarTelefone()
-                .selecionarEmail()
-                .selecionarEndereco()
-                .selecionarCpf()
-                .selecionarDataDeNascimento()
-                .adicionarContatos()
 
-        ;
-        return pessoa;
-    }
 
     public static Pessoa testarInserindoDados(Pessoa pessoa){
         return pessoa.setarTudo();

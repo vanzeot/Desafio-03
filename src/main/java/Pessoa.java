@@ -43,6 +43,16 @@ public class Pessoa {
     public Pessoa() {
     }
 
+    public Pessoa inserirDados(){
+        return this.selecionarNome()
+                .selecionarTelefone()
+                .selecionarEmail()
+                .selecionarEndereco()
+                .selecionarCpf()
+                .selecionarDataDeNascimento()
+                .adicionarContatos();
+    }
+
 
     //=====================
     // MÉTODOS DE SELEÇÃO
