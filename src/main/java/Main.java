@@ -4,9 +4,12 @@ public class Main {
         boolean estaEmServico = true;
 
         AdministradorDePessoas administradorDePessoas = new AdministradorDePessoas();
+
+        ConexaoBD.criarConexao();
         ConexaoBD.criarTabelas();
 
         Mensageria.bemVindo();
+        administradorDePessoas.popularTabelas();
 
 
         while ( estaEmServico ){
