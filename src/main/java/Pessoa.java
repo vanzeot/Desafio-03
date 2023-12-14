@@ -16,7 +16,7 @@ public class Pessoa {
     Melhorias possíveis:
     - Herança/polimorfismo para retirar repetição da estrutura de definição/validação de atributos
      */
-    private int id;
+    private Long id;
     private String nome;
     private String telefone;
     private String email;
@@ -31,6 +31,17 @@ public class Pessoa {
     //contatos;
 
     public Pessoa(String nome, String telefone, String email, String endereco, String cpf, String dataDeNascimento, ArrayList<Contato> contatos) {
+        this.nome = nome;
+        this.telefone = telefone;
+        this.email = email;
+        this.endereco = endereco;
+        this.cpf = cpf;
+        this.dataDeNascimento = dataDeNascimento;
+        this.contatos = contatos;
+    }
+
+    public Pessoa(Long id, String nome, String telefone, String email, String endereco, String cpf, String dataDeNascimento, ArrayList<Contato> contatos) {
+        this.id = id;
         this.nome = nome;
         this.telefone = telefone;
         this.email = email;
@@ -146,6 +157,7 @@ public class Pessoa {
 
             switch(acao){
 
+                //TODO: CONSTRUIR LÓGICA PARA UPDATE EM BANCO APÓS ALTERAR OBJETO DE 'PESSOA'
                 case "1":
                     selecionarNome();
                     break;
@@ -246,11 +258,11 @@ public class Pessoa {
     //       GETTERS & SETTERS
     //=====================
 
-    public void setId(int id){
+    public void setId(Long id){
         this.id = id;
     }
 
-    public int getId(){
+    public Long getId(){
         return id;
     }
     public String getNome() {
