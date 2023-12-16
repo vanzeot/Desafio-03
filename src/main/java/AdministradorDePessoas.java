@@ -397,6 +397,29 @@ public class AdministradorDePessoas {
         }
     }
 
+    public static String enviarQueryDePessoaQueJaPossuiOCpf(String cpf){
+
+        String query = "SELECT nome FROM \"desafio-03\".public.pessoa WHERE cpf = '" + cpf + "';";
+
+        try (
+                Connection con = ConexaoBD.criarConexao();
+                Statement statement = con.createStatement()
+                ){
+
+            ResultSet resultSet = statement.executeQuery(query);
+
+            if (resultSet.next()){
+                return resultSet.getString("nome");
+            } else {
+                return "";
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
     // Inserir os dados iniciais da tabela, apenas para facilitar o teste
     public void popularTabelas(){
 

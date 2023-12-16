@@ -117,9 +117,25 @@ public class Pessoa {
         System.out.println("Digite o CPF da pessoa: ");
         String cpf = scanner.nextLine().trim();
 
-        while (!cpfEhValido(cpf)){
-            System.out.println("O CPF não é válido. Tente novamente: ");
+        boolean cpfNaoEhValido = !cpfEhValido(cpf);
+        boolean cpfEhDeOutraPessoa = false;
+
+        String resultadoNomePorCpf = AdministradorDePessoas.enviarQueryDePessoaQueJaPossuiOCpf(cpf);
+        if (!cpfNaoEhValido) cpfEhDeOutraPessoa = !resultadoNomePorCpf.isEmpty() && !resultadoNomePorCpf.equals(this.nome);
+
+        while (cpfNaoEhValido || cpfEhDeOutraPessoa){
+
+            if (cpfNaoEhValido){
+                System.out.println("O CPF não é válido. Tente novamente: ");
+            } else {
+                System.out.println("O CPF já está atrelado à pessoa '"+resultadoNomePorCpf+"'. Tente novamente: ");
+            }
+
             cpf = scanner.nextLine().trim();
+
+            cpfNaoEhValido = !cpfEhValido(cpf);
+            resultadoNomePorCpf = AdministradorDePessoas.enviarQueryDePessoaQueJaPossuiOCpf(cpf);
+            if (!cpfNaoEhValido) cpfEhDeOutraPessoa = !resultadoNomePorCpf.isEmpty() && !resultadoNomePorCpf.equals(this.nome);
 
         }
         this.cpf = formataCpf(cpf);
