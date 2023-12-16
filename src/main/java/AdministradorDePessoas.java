@@ -10,8 +10,6 @@ public class AdministradorDePessoas {
     Classe para fazer a ponte entre a classe de negócio (Pessoa) e o banco de dados.
      */
 
-    Connection con = ConexaoBD.con;
-
     public AdministradorDePessoas(){
     }
 
@@ -19,12 +17,15 @@ public class AdministradorDePessoas {
 
     public void imprimirTabela(){
 
-        String formatacaoDasColunasDaTabela = "| %-25s | %-13s | %-25s | %-35s | %-14s | %-12s | %-120s |\n";
+        String formatacaoDasColunasDaTabela = "| %-25s | %-13s | %-25s | %-35s | %-14s | %-12s | %-160s |\n";
 
         // Query para buscar todas pessoas
-        String queryPessoas="SELECT id_pessoa, nome, telefone, email, endereco, cpf, data_de_nascimento FROM \"desafio-03\".public.pessoa";
+        String queryPessoas="SELECT id_pessoa, nome, telefone, email, endereco, cpf, data_de_nascimento FROM \"desafio-03\".public.pessoa ORDER BY id_pessoa";
 
-        try( Statement statementDasPessoas = con.createStatement() ){
+        try(
+                Connection con = ConexaoBD.criarConexao();
+                Statement statementDasPessoas = con.createStatement();
+                ) {
 
             ResultSet resultSetDasPessoas= statementDasPessoas.executeQuery(queryPessoas);
 
@@ -85,14 +86,7 @@ public class AdministradorDePessoas {
         pessoa.inserirDados();
 
         enviarQueryDeInsertDaPessoa(pessoa);
-//        testarInserindoDados(pessoa);
 
-    }
-
-
-
-    public static Pessoa testarInserindoDados(Pessoa pessoa){
-        return pessoa.setarTudo();
     }
 
     public void editarPessoa(){
@@ -102,8 +96,60 @@ public class AdministradorDePessoas {
         System.out.println("A pessoa é o(a): " + pessoa.getNome() +
                 "\nCaso naõ deseje alterar algum dado, apenas tecle 'Enter' para pular.");
 
-        pessoa.acoesDeEdicao();
+        boolean emServico = true;
 
+        while (emServico){
+
+            Mensageria.mostrarAcoesDeEdicao();
+            Scanner scanner = new Scanner(System.in);
+            String acao = scanner.nextLine();
+            String query;
+
+            switch(acao){
+
+                case "1":
+                    pessoa.selecionarNome();
+                    enviarQueryDeUpdateStringDaPessoa("nome", pessoa.getNome(), pessoa.getId());
+                    break;
+
+                case "2":
+                    pessoa.selecionarTelefone();
+                    enviarQueryDeUpdateStringDaPessoa("telefone", pessoa.getTelefone(), pessoa.getId());
+                    break;
+
+                case "3":
+                    pessoa.selecionarEmail();
+                    enviarQueryDeUpdateStringDaPessoa("email", pessoa.getEmail(), pessoa.getId());
+                    break;
+
+                case "4":
+                    pessoa.selecionarEndereco();
+                    enviarQueryDeUpdateStringDaPessoa("endereco", pessoa.getEndereco(), pessoa.getId());
+                    break;
+
+                case "5":
+                    pessoa.selecionarCpf();
+                    enviarQueryDeUpdateStringDaPessoa("cpf", pessoa.getCpf(), pessoa.getId());
+                    break;
+
+                case "6":
+                    pessoa.selecionarDataDeNascimento();
+                    enviarQueryDeUpdateStringDaPessoa("data_de_nascimento", pessoa.getDataDeNascimento(), pessoa.getId());
+                    break;
+
+                case "7":
+                    apresentarAcoesdeContatosEEnviarQuery(pessoa);
+                    break;
+
+                case "8":
+                    emServico = false;
+                    break;
+
+                default:
+                    System.out.println("Opção inválida.");
+
+            }
+        }
     }
 
     public void excluirPessoa(){
@@ -117,25 +163,22 @@ public class AdministradorDePessoas {
 
         if (confirmacao.equals("confirma")) {
 
-//            con = ConexaoBD.criarConexao();
-
             // REMOÇÃO no banco de dados
             String queryContatos="DELETE FROM contato WHERE id_pessoa = ?;";
             String queryPessoa="DELETE FROM pessoa WHERE id_pessoa = ?;";
 
-            // PESSOA
-            //TODO: DIVIDIR EM DUAS QUERYS/STATEMENTS
             try (
+                    Connection con = ConexaoBD.criarConexao();
                     PreparedStatement preparedStatementContatos=con.prepareStatement(queryContatos, Statement.RETURN_GENERATED_KEYS);
-                 PreparedStatement preparedStatementPessoa=con.prepareStatement(queryPessoa, Statement.RETURN_GENERATED_KEYS);
+                    PreparedStatement preparedStatementPessoa=con.prepareStatement(queryPessoa, Statement.RETURN_GENERATED_KEYS);
                  ) {
 
                 preparedStatementContatos.setLong(1,pessoa.getId());
                 preparedStatementPessoa.setLong(1,pessoa.getId());
 
-                System.out.println(preparedStatementContatos.toString());
+                // Deleta os contatos da pessoa
                 preparedStatementContatos.executeUpdate();
-                System.out.println(preparedStatementPessoa.toString());
+                // Deleta a pessoa
                 preparedStatementPessoa.executeUpdate();
 
             } catch (SQLException e) {
@@ -163,31 +206,27 @@ public class AdministradorDePessoas {
         Scanner scanner = new Scanner(System.in);
         boolean buscaFinalizada = false;
         Pessoa resultadoDaBusca = null;
-        String cpfFormatado = "";
         int indice = 0;
 
         while (!buscaFinalizada){
             System.out.println("Digite o CPF da pessoa:");
             String cpfDigitado = scanner.nextLine();
 
-            boolean ehValido = AuxiliarCpf.cpfEhValido(cpfDigitado);
+            if (AuxiliarCpf.cpfEhValido(cpfDigitado)){
 
-            if (ehValido){
-                cpfFormatado = AuxiliarCpf.formataCpf(cpfDigitado);
-                System.out.println("cpfFormatado:" + cpfFormatado);
+                // Formata CPF antes de buscar (query)
+                resultadoDaBusca = getPessoaPorCpf(AuxiliarCpf.formataCpf(cpfDigitado));
 
-                try {
-                    resultadoDaBusca = getPessoaPorCpf(cpfFormatado);
+                if (resultadoDaBusca != null) {
                     buscaFinalizada = true;
-                } catch (Exception e){
-                    System.out.print("Pessoa não encontrada. Essa é a lista de pessoas:");
-
-                    // TODO: RESOLVER CONTEXTO STATIC PARA VISUALIZAR TABELA
-                    //imprimirTabela();
                 }
+
             }
 
-
+            if (!buscaFinalizada){
+                System.out.print("Pessoa não encontrada. Essa é a lista de pessoas:");
+                imprimirTabela();
+            }
 
         }
 
@@ -196,58 +235,59 @@ public class AdministradorDePessoas {
 
     public Pessoa getPessoaPorCpf(String cpf){
         // SELECT no banco de dados
-        con=ConexaoBD.criarConexao();
         String queryPessoaPorCpf="SELECT * FROM \"desafio-03\".public.pessoa where cpf = '" + cpf + "';";
 
-        try{
-            Statement statementDaPessoa = con.createStatement();
+        try(
+                Connection con = ConexaoBD.criarConexao();
+                Statement statementDaPessoa = con.createStatement();
+                ){
+
             ResultSet resultSetDaPessoa= statementDaPessoa.executeQuery(queryPessoaPorCpf);
 
-            resultSetDaPessoa.next();
+            if (resultSetDaPessoa.next()){
 
-            Long id_pessoa = resultSetDaPessoa.getLong("id_pessoa");
-            String queryContatos="SELECT nome, email, telefone FROM \"desafio-03\".public.contato where id_pessoa = " + id_pessoa + ";";
-            Statement statementDosContatos = con.createStatement();
-            ResultSet resultSetDosContatos = statementDosContatos.executeQuery(queryContatos);
+                System.out.println("next = true");
 
-            // Cria array com contatos da pessoa
+                Long id_pessoa = resultSetDaPessoa.getLong("id_pessoa");
+                String queryContatos="SELECT nome, email, telefone FROM \"desafio-03\".public.contato where id_pessoa = " + id_pessoa + ";";
+                Statement statementDosContatos = con.createStatement();
+                ResultSet resultSetDosContatos = statementDosContatos.executeQuery(queryContatos);
 
-            ArrayList<Contato> contatosDaPessoa = new ArrayList<>();
+                // Cria array com contatos da pessoa
+                ArrayList<Contato> contatosDaPessoa = new ArrayList<>();
 
-            while (resultSetDosContatos.next()){
+                while (resultSetDosContatos.next()){
 
-                contatosDaPessoa.add(
-                        new Contato(
-                                resultSetDosContatos.getString("nome"),
-                                resultSetDosContatos.getString("email"),
-                                resultSetDosContatos.getString("telefone")
-                        )
+                    contatosDaPessoa.add(
+                            new Contato(
+                                    resultSetDosContatos.getString("nome"),
+                                    resultSetDosContatos.getString("email"),
+                                    resultSetDosContatos.getString("telefone")
+                            )
+                    );
+                }
+
+                return new Pessoa(
+                        resultSetDaPessoa.getLong(1), //id
+                        resultSetDaPessoa.getString(2), //nome
+                        resultSetDaPessoa.getString(3), //telefone
+                        resultSetDaPessoa.getString(4), //email
+                        resultSetDaPessoa.getString(5), //endereço
+                        resultSetDaPessoa.getString(6), //cpf
+                        resultSetDaPessoa.getString(7), //data de nascimento
+                        contatosDaPessoa
                 );
-
             }
-
-           return new Pessoa(
-                   resultSetDaPessoa.getLong(1), //id
-                   resultSetDaPessoa.getString(2), //nome
-                   resultSetDaPessoa.getString(3), //telefone
-                   resultSetDaPessoa.getString(4), //email
-                   resultSetDaPessoa.getString(5), //endereço
-                   resultSetDaPessoa.getString(6), //cpf
-                   resultSetDaPessoa.getString(7), //data de nascimento
-                   contatosDaPessoa
-           );
-
+            else {
+                System.out.println("next = false");
+                return null;
+            }
 
         }catch (Exception ex){
             ex.printStackTrace();
         }
         return null;
     }
-
-
-    //////////////
-
-
 
     public boolean apresentarMenuEColetarAcao(){
 
@@ -281,13 +321,38 @@ public class AdministradorDePessoas {
         return estaEmServico;
     }
 
+    private void apresentarAcoesdeContatosEEnviarQuery(Pessoa pessoa) {
+        AdministradorDeContatos administradorDeContatos = new AdministradorDeContatos(pessoa.getContatos());
+
+        ArrayList<Contato> contatosAntesDaEdicao = new ArrayList<>(pessoa.getContatos());
+        ArrayList<Contato> contatosAtualizados = administradorDeContatos.acoesDeContatos();
+
+                    // Se a lista de contatos se alterou, realiza update
+                    System.out.println("ANTES:");
+                    for (int i = 0; i < contatosAntesDaEdicao.size(); i++) {
+                        System.out.println(contatosAntesDaEdicao.get(i).getNome());
+                    }
+                    System.out.println("DEPOIS:");
+                    for (int i = 0; i < contatosAtualizados.size(); i++) {
+                        System.out.println(contatosAtualizados.get(i).getNome());
+                    }
+                    System.out.println("diferentes? = "+!contatosAtualizados.equals(contatosAntesDaEdicao));
+
+        if (!contatosAtualizados.equals(contatosAntesDaEdicao)) {
+            enviarQueryDeUpdateContatosDaPessoa(contatosAtualizados, pessoa.getId());
+        }
+    }
+
     public void enviarQueryDeInsertDaPessoa(Pessoa pessoa){
 
-        // INSERÇÃO no banco de dados
+        // INSERIR na tabela de "pessoa"
         String queryDaPessoa="INSERT INTO pessoa (nome, telefone, email, endereco, cpf, data_de_nascimento) VALUES(?,?,?,?,?,?);";
 
-        // PESSOA
-        try (PreparedStatement preparedStatement= con.prepareStatement(queryDaPessoa, Statement.RETURN_GENERATED_KEYS)) {
+        // Cria a pessoa
+        try (
+                Connection con = ConexaoBD.criarConexao();
+                PreparedStatement preparedStatement= con.prepareStatement(queryDaPessoa, Statement.RETURN_GENERATED_KEYS)
+        ) {
             preparedStatement.setString(1,pessoa.getNome());
             preparedStatement.setString(2,pessoa.getTelefone());
             preparedStatement.setString(3,pessoa.getEmail());
@@ -295,24 +360,22 @@ public class AdministradorDePessoas {
             preparedStatement.setString(5,pessoa.getCpf());
             preparedStatement.setString(6,pessoa.getDataDeNascimento());
 
-            System.out.println(preparedStatement.toString());
-            int contagem = preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();
 
-
+            // Cria os contatos
             try (ResultSet keys = preparedStatement.getGeneratedKeys()) {
 
                 keys.next();
                 String queryDoContato = "INSERT INTO contato (id_pessoa, nome, telefone, email) VALUES(?,?,?,?);";
                 PreparedStatement preparedStatement2 = con.prepareStatement(queryDoContato, Statement.RETURN_GENERATED_KEYS);
-                // CONTATOS
-                for (int i=0; i < pessoa.getContatos().size(); i++){
 
+                // Para cada contato do objeto "pessoa", realiza um INSERT na tabela "contato"
+                for (int i=0; i < pessoa.getContatos().size(); i++){
 
                     preparedStatement2.setLong(1,keys.getLong("id_pessoa"));
                     preparedStatement2.setString(2,pessoa.getContatos().get(i).getNome());
                     preparedStatement2.setString(3,pessoa.getContatos().get(i).getTelefone());
                     preparedStatement2.setString(4,pessoa.getContatos().get(i).getEmail());
-                    System.out.println(preparedStatement2.toString());
 
                     preparedStatement2.executeUpdate();
                 }
@@ -325,6 +388,56 @@ public class AdministradorDePessoas {
         }
     }
 
+    public void enviarQueryDeUpdateStringDaPessoa(String campo, String valor, Long id_pessoa){
+        String query = "UPDATE pessoa SET " + campo + " = ? WHERE id_pessoa = ?;";
+
+        try (
+                Connection con = ConexaoBD.criarConexao();
+                PreparedStatement preparedStatement = con.prepareStatement(query);
+                ) {
+
+            preparedStatement.setString(1,valor);
+            preparedStatement.setLong(2,id_pessoa);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void enviarQueryDeUpdateContatosDaPessoa(ArrayList<Contato> contatos, Long id_pessoa) {
+
+        String queryDeDelete    = "DELETE FROM contato WHERE id_pessoa = ?;";
+        String queryDeInput     = "INSERT INTO contato (id_pessoa, nome, telefone, email) VALUES(?,?,?,?);";
+
+        try (
+                Connection con = ConexaoBD.criarConexao();
+                PreparedStatement preparedStatementDelete = con.prepareStatement(queryDeDelete);
+                PreparedStatement preparedStatementInput = con.prepareStatement(queryDeInput, Statement.RETURN_GENERATED_KEYS);
+        ) {
+
+            preparedStatementDelete.setLong(1, id_pessoa);
+            preparedStatementDelete.executeUpdate();
+
+            // Para cada contato do objeto "pessoa", realiza um INSERT na tabela "contato"
+            for (int i=0; i < contatos.size(); i++){
+
+                preparedStatementInput.setLong(1,id_pessoa);
+                preparedStatementInput.setString(2,contatos.get(i).getNome());
+                preparedStatementInput.setString(3,contatos.get(i).getTelefone());
+                preparedStatementInput.setString(4,contatos.get(i).getEmail());
+
+                preparedStatementInput.executeUpdate();
+            }
+
+            System.out.println("\nDados atualizados com sucesso.\n");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Inserir os dados iniciais da tabela, apenas para facilitar o teste
     public void popularTabelas(){
 
         Contato contato1otavio = new Contato(

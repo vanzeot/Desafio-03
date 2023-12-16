@@ -11,7 +11,6 @@ public class Main {
         Mensageria.bemVindo();
         administradorDePessoas.popularTabelas();
 
-
         while ( estaEmServico ){
 
             Mensageria.mostrarAcoesDoMenu();

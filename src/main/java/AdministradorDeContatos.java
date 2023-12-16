@@ -3,11 +3,11 @@ import java.util.Scanner;
 
 public class AdministradorDeContatos {
 
-    static ArrayList<Contato> contatos;
+    ArrayList<Contato> contatos;
     Scanner scanner = new Scanner(System.in);
 
-    public AdministradorDeContatos(){
-        contatos = new ArrayList<>();
+    public AdministradorDeContatos(ArrayList<Contato> contatos){
+        this.contatos = contatos;
     }
 
     public static int selecionarContato(ArrayList<Contato> contatos){
@@ -39,7 +39,7 @@ public class AdministradorDeContatos {
         return indice;
     }
 
-    public void acoesDeContatos(){
+    public ArrayList<Contato> acoesDeContatos(){
 
         boolean emServico = true;
         int indice;
@@ -83,5 +83,6 @@ public class AdministradorDeContatos {
 
             }
         }
+        return contatos;
     }
 }
