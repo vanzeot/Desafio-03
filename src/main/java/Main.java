@@ -5,7 +5,6 @@ public class Main {
 
         AdministradorDePessoas administradorDePessoas = new AdministradorDePessoas();
 
-        ConexaoBD.criarConexao();
         ConexaoBD.criarTabelas();
 
         Mensageria.bemVindo();

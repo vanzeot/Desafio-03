@@ -24,7 +24,7 @@ public class AdministradorDePessoas {
 
         try(
                 Connection con = ConexaoBD.criarConexao();
-                Statement statementDasPessoas = con.createStatement();
+                Statement statementDasPessoas = con.createStatement()
                 ) {
 
             ResultSet resultSetDasPessoas= statementDasPessoas.executeQuery(queryPessoas);
@@ -45,11 +45,11 @@ public class AdministradorDePessoas {
                 try ( Statement statementDosContatos = con.createStatement() ){
 
                     ResultSet resultSetDosContatos = statementDosContatos.executeQuery(queryContatos);
-                    StringBuilder contatos = new StringBuilder();
+                    StringBuilder stringDeContatos = new StringBuilder();
 
                     // Loop para cada contato obtido na query das tabelas
                     while ( resultSetDosContatos.next() ){
-                        contatos.append("< ")
+                        stringDeContatos.append("< ")
                                 .append(resultSetDosContatos.getString("nome"))
                                 .append(" / ").append(resultSetDosContatos.getString("email"))
                                 .append(" / ").append(resultSetDosContatos.getString("telefone"))
@@ -64,7 +64,7 @@ public class AdministradorDePessoas {
                             resultSetDasPessoas.getString(5), //endereço
                             resultSetDasPessoas.getString(6), //cpf
                             resultSetDasPessoas.getString(7), //data de nascimento
-                            contatos.toString()
+                            stringDeContatos
                     );
                 }
 
@@ -103,51 +103,35 @@ public class AdministradorDePessoas {
             Mensageria.mostrarAcoesDeEdicao();
             Scanner scanner = new Scanner(System.in);
             String acao = scanner.nextLine();
-            String query;
 
-            switch(acao){
-
-                case "1":
+            switch (acao) {
+                case "1" -> {
                     pessoa.selecionarNome();
                     enviarQueryDeUpdateStringDaPessoa("nome", pessoa.getNome(), pessoa.getId());
-                    break;
-
-                case "2":
+                }
+                case "2" -> {
                     pessoa.selecionarTelefone();
                     enviarQueryDeUpdateStringDaPessoa("telefone", pessoa.getTelefone(), pessoa.getId());
-                    break;
-
-                case "3":
+                }
+                case "3" -> {
                     pessoa.selecionarEmail();
                     enviarQueryDeUpdateStringDaPessoa("email", pessoa.getEmail(), pessoa.getId());
-                    break;
-
-                case "4":
+                }
+                case "4" -> {
                     pessoa.selecionarEndereco();
                     enviarQueryDeUpdateStringDaPessoa("endereco", pessoa.getEndereco(), pessoa.getId());
-                    break;
-
-                case "5":
+                }
+                case "5" -> {
                     pessoa.selecionarCpf();
                     enviarQueryDeUpdateStringDaPessoa("cpf", pessoa.getCpf(), pessoa.getId());
-                    break;
-
-                case "6":
+                }
+                case "6" -> {
                     pessoa.selecionarDataDeNascimento();
                     enviarQueryDeUpdateStringDaPessoa("data_de_nascimento", pessoa.getDataDeNascimento(), pessoa.getId());
-                    break;
-
-                case "7":
-                    apresentarAcoesdeContatosEEnviarQuery(pessoa);
-                    break;
-
-                case "8":
-                    emServico = false;
-                    break;
-
-                default:
-                    System.out.println("Opção inválida.");
-
+                }
+                case "7" -> apresentarAcoesdeContatosEEnviarQuery(pessoa);
+                case "8" -> emServico = false;
+                default -> System.out.println("Opção inválida.");
             }
         }
     }
@@ -170,7 +154,7 @@ public class AdministradorDePessoas {
             try (
                     Connection con = ConexaoBD.criarConexao();
                     PreparedStatement preparedStatementContatos=con.prepareStatement(queryContatos, Statement.RETURN_GENERATED_KEYS);
-                    PreparedStatement preparedStatementPessoa=con.prepareStatement(queryPessoa, Statement.RETURN_GENERATED_KEYS);
+                    PreparedStatement preparedStatementPessoa=con.prepareStatement(queryPessoa, Statement.RETURN_GENERATED_KEYS)
                  ) {
 
                 preparedStatementContatos.setLong(1,pessoa.getId());
@@ -206,7 +190,6 @@ public class AdministradorDePessoas {
         Scanner scanner = new Scanner(System.in);
         boolean buscaFinalizada = false;
         Pessoa resultadoDaBusca = null;
-        int indice = 0;
 
         while (!buscaFinalizada){
             System.out.println("Digite o CPF da pessoa:");
@@ -239,7 +222,7 @@ public class AdministradorDePessoas {
 
         try(
                 Connection con = ConexaoBD.criarConexao();
-                Statement statementDaPessoa = con.createStatement();
+                Statement statementDaPessoa = con.createStatement()
                 ){
 
             ResultSet resultSetDaPessoa= statementDaPessoa.executeQuery(queryPessoaPorCpf);
@@ -297,25 +280,13 @@ public class AdministradorDePessoas {
         String opcaoSelecionada = scanner.nextLine();
 
 
-        switch (opcaoSelecionada){
-
-            case "1":
-                this.imprimirTabela();
-                break;
-            case "2":
-                this.adicionarPessoa();
-                break;
-            case "3":
-                this.editarPessoa();
-                break;
-            case "4":
-                this.excluirPessoa();
-                break;
-            case "5":
-                estaEmServico = false;
-                break;
-            default:
-                System.out.println("Opção não reconhecida. Por favor, tente de novo...");
+        switch (opcaoSelecionada) {
+            case "1" -> this.imprimirTabela();
+            case "2" -> this.adicionarPessoa();
+            case "3" -> this.editarPessoa();
+            case "4" -> this.excluirPessoa();
+            case "5" -> estaEmServico = false;
+            default -> System.out.println("Opção não reconhecida. Por favor, tente de novo...");
         }
 
         return estaEmServico;
@@ -326,17 +297,6 @@ public class AdministradorDePessoas {
 
         ArrayList<Contato> contatosAntesDaEdicao = new ArrayList<>(pessoa.getContatos());
         ArrayList<Contato> contatosAtualizados = administradorDeContatos.acoesDeContatos();
-
-                    // Se a lista de contatos se alterou, realiza update
-                    System.out.println("ANTES:");
-                    for (int i = 0; i < contatosAntesDaEdicao.size(); i++) {
-                        System.out.println(contatosAntesDaEdicao.get(i).getNome());
-                    }
-                    System.out.println("DEPOIS:");
-                    for (int i = 0; i < contatosAtualizados.size(); i++) {
-                        System.out.println(contatosAtualizados.get(i).getNome());
-                    }
-                    System.out.println("diferentes? = "+!contatosAtualizados.equals(contatosAntesDaEdicao));
 
         if (!contatosAtualizados.equals(contatosAntesDaEdicao)) {
             enviarQueryDeUpdateContatosDaPessoa(contatosAtualizados, pessoa.getId());
@@ -393,7 +353,7 @@ public class AdministradorDePessoas {
 
         try (
                 Connection con = ConexaoBD.criarConexao();
-                PreparedStatement preparedStatement = con.prepareStatement(query);
+                PreparedStatement preparedStatement = con.prepareStatement(query)
                 ) {
 
             preparedStatement.setString(1,valor);
@@ -414,19 +374,19 @@ public class AdministradorDePessoas {
         try (
                 Connection con = ConexaoBD.criarConexao();
                 PreparedStatement preparedStatementDelete = con.prepareStatement(queryDeDelete);
-                PreparedStatement preparedStatementInput = con.prepareStatement(queryDeInput, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement preparedStatementInput = con.prepareStatement(queryDeInput, Statement.RETURN_GENERATED_KEYS)
         ) {
 
             preparedStatementDelete.setLong(1, id_pessoa);
             preparedStatementDelete.executeUpdate();
 
             // Para cada contato do objeto "pessoa", realiza um INSERT na tabela "contato"
-            for (int i=0; i < contatos.size(); i++){
+            for (Contato contato : contatos) {
 
-                preparedStatementInput.setLong(1,id_pessoa);
-                preparedStatementInput.setString(2,contatos.get(i).getNome());
-                preparedStatementInput.setString(3,contatos.get(i).getTelefone());
-                preparedStatementInput.setString(4,contatos.get(i).getEmail());
+                preparedStatementInput.setLong(1, id_pessoa);
+                preparedStatementInput.setString(2, contato.getNome());
+                preparedStatementInput.setString(3, contato.getTelefone());
+                preparedStatementInput.setString(4, contato.getEmail());
 
                 preparedStatementInput.executeUpdate();
             }

@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 public class AuxiliarEmail {
 
     public static boolean emailNaoEhValido(String email) {
-        email.trim();
+        email = email.trim();
         String regex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
                 + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
         Pattern pattern = Pattern.compile(regex);

@@ -49,38 +49,26 @@ public class AdministradorDeContatos {
             Mensageria.mostrarAcoesDeContato();
             String acao = scanner.nextLine();
 
-            switch(acao){
-
-                case "1":
-                    contatos.add(new Contato().inserirDados());
-                    break;
-
-                case "2":
+            switch (acao) {
+                case "1" -> contatos.add(new Contato().inserirDados());
+                case "2" -> {
                     indice = AdministradorDeContatos.selecionarContato(contatos);
                     if (indice != -1) {
                         contatos.set(indice, new Contato().inserirDados());
                     }
-                    break;
-
-                case "3":
+                }
+                case "3" -> {
                     if (this.contatos.size() > 2) {
                         indice = AdministradorDeContatos.selecionarContato(contatos);
                         if (indice != -1) {
                             contatos.remove(indice);
                         }
-                    }
-                    else {
+                    } else {
                         System.out.println("Não há como remover, pois deve haver no mínimo 2.");
                     }
-                    break;
-
-                case "4":
-                    emServico = false;
-                    break;
-
-                default:
-                    System.out.println("Opção inválida.");
-
+                }
+                case "4" -> emServico = false;
+                default -> System.out.println("Opção inválida.");
             }
         }
         return contatos;

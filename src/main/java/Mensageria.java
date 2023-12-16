@@ -1,5 +1,3 @@
-import java.util.Scanner;
-
 public class Mensageria {
 
     public static void bemVindo(){
@@ -10,35 +8,43 @@ public class Mensageria {
     }
 
     public static void mostrarAcoesDoMenu(){
-        System.out.println("\n" +
-                "\n1 - Listar pessoas" +
-                "\n2 - Incluir pessoa" +
-                "\n3 - Editar pessoa" +
-                "\n4 - Excluir pessoa" +
-                "\n5 - Finalizar" +
-                "\n\nInsira o número correspondente a ação desejada:");
+        System.out.println("""
+
+                1 - Listar pessoas
+                2 - Incluir pessoa
+                3 - Editar pessoa
+                4 - Excluir pessoa
+                5 - Finalizar
+
+                Insira o número correspondente a ação desejada:""");
     }
 
     public static void mostrarAcoesDeEdicao(){
         System.out.println(
-                "\n1 - Nome" +
-                        "\n2 - Telefone" +
-                        "\n3 - Email" +
-                        "\n4 - Endereço" +
-                        "\n5 - CPF" +
-                        "\n6 - Data de nascimento" +
-                        "\n7 - Contatos" +
-                        "\n8 - Finalizar" +
-                        "\n\nInsira o número correspondente a ação desejada:");
+                """
+
+                        1 - Nome
+                        2 - Telefone
+                        3 - Email
+                        4 - Endereço
+                        5 - CPF
+                        6 - Data de nascimento
+                        7 - Contatos
+                        8 - Finalizar
+
+                        Insira o número correspondente a ação desejada:""");
     }
 
     public static void mostrarAcoesDeContato(){
         System.out.println(
-                "\n1 - Incluir contato" +
-                        "\n2 - Editar contato" +
-                        "\n3 - Excluir contato" +
-                        "\n4 - Finalizar" +
-                        "\n\nInsira o número correspondente a ação desejada:");
+                """
+
+                        1 - Incluir contato
+                        2 - Editar contato
+                        3 - Excluir contato
+                        4 - Finalizar
+
+                        Insira o número correspondente a ação desejada:""");
     }
 
 }

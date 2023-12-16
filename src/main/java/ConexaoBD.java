@@ -50,8 +50,8 @@ public class ConexaoBD {
 
         try (
                 Connection con = criarConexao();
-                Statement statement = con.createStatement();
-                ){
+                Statement statement = con.createStatement()
+        ){
 
             statement.execute(query);
         } catch (Exception e){

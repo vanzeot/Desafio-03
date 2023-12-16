@@ -25,8 +25,6 @@ public class Pessoa {
     private String dataDeNascimento;
     private ArrayList<Contato> contatos = new ArrayList<>();
 
-    private AdministradorDeContatos administradorDeContatos = new AdministradorDeContatos();
-
     Scanner scanner = new Scanner(System.in);
     //contatos;
 
@@ -146,62 +144,11 @@ public class Pessoa {
         return this;
     }
 
-    public void acoesDeEdicao(){
-
-        boolean emServico = true;
-
-        while (emServico){
-
-            Mensageria.mostrarAcoesDeEdicao();
-            String acao = scanner.nextLine();
-
-            switch(acao){
-
-                //TODO: CONSTRUIR LÓGICA PARA UPDATE EM BANCO APÓS ALTERAR OBJETO DE 'PESSOA'
-                case "1":
-                    selecionarNome();
-                    break;
-
-                case "2":
-                    selecionarTelefone();
-                    break;
-
-                case "3":
-                    selecionarEmail();
-                    break;
-
-                case "4":
-                    selecionarEndereco();
-                    break;
-
-                case "5":
-                    selecionarCpf();
-                    break;
-
-                case "6":
-                    selecionarDataDeNascimento();
-                    break;
-
-                case "7":
-                    administradorDeContatos.acoesDeContatos();
-                    break;
-
-                case "8":
-                    emServico = false;
-                    break;
-
-                default:
-                    System.out.println("Opção inválida.");
-
-            }
-        }
-    }
-
     public Pessoa adicionarContatos(){
-        boolean emEdicao = true;
+
         int i = 0;
 
-        while (emEdicao){
+        while (true){
 
             if (this.contatos.size() >= 2) {
                 System.out.println("Digite 'fim' caso não deseje adicionar mais contatos: ");
@@ -221,14 +168,6 @@ public class Pessoa {
         return this;
     }
 
-    public void imprimirDados(){
-
-        // UMA LINHA APENAS VAI FICAR AQUI
-        System.out.printf("| %-25s | %-13s | %-25s | %-35s | %-14s | %-12s | %-120s |\n",
-                this.nome, this.telefone, this.email, this.endereco, this.cpf, this.dataDeNascimento, imprimirContatos());
-
-    }
-
     //=====================
     // MÉTODOS AUXILIARES
     //=====================
@@ -241,16 +180,6 @@ public class Pessoa {
         }
 
         return input;
-
-    }
-
-    public String imprimirContatos(){
-
-        String dados = "";
-        for (Contato contato : contatos) {
-            dados = dados + "< " + contato.getNome() + ", " + contato.getEmail() + ", " + contato.getTelefone() + " > ";
-        }
-        return dados.substring(0,dados.length()-1);
 
     }
 
@@ -293,13 +222,4 @@ public class Pessoa {
         return contatos;
     }
 
-    public Pessoa setarTudo() {
-        this.nome = "Otávio dos Santos";
-        this.email = "otavio@gmail.com";
-        this.telefone = "3522-4243";
-        this.cpf = "700.968.761-74";
-        this.dataDeNascimento = "11/08/1994";
-        this.adicionarContatos();
-        return this;
-    }
 }

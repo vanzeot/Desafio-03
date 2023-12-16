@@ -21,7 +21,7 @@ public class AuxiliarCpf {
             sm = 0;
             peso = 10;
             for (i = 0; i < 9; i++) {
-                num = (int) (cpfCru.charAt(i) - 48);
+                num = cpfCru.charAt(i) - 48;
                 sm = sm + (num * peso);
                 peso = peso - 1;
             }
@@ -36,7 +36,7 @@ public class AuxiliarCpf {
             sm = 0;
             peso = 11;
             for (i = 0; i < 10; i++) {
-                num = (int) (cpfCru.charAt(i) - 48);
+                num = cpfCru.charAt(i) - 48;
                 sm = sm + (num * peso);
                 peso = peso - 1;
             }
@@ -47,10 +47,7 @@ public class AuxiliarCpf {
             else
                 dig11 = (char) (r + 48);
 
-            if ((dig10 == cpfCru.charAt(9)) && (dig11 == cpfCru.charAt(10)))
-                return (true);
-            else
-                return (false);
+            return (dig10 == cpfCru.charAt(9)) && (dig11 == cpfCru.charAt(10));
         } catch (InputMismatchException erro) {
             return (false);
         }
